@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arnav Mahadeshwar — Software Engineer — AI &amp; Full-Stack</title>
+<style>
+:root{--bg:#0a0e14;--panel:#11161f;--panel2:#161d29;--ink:#d6dde8;--dim:#7d8799;
+--green:#7ee787;--cyan:#79c0ff;--amber:#ffbe5c;--pink:#ff7b9c;--purple:#c497ff;--rule:#232c3b;
+--mono:"SF Mono","Cascadia Code",Consolas,monospace;--sans:"Segoe UI",system-ui,sans-serif;
+--teal:#3d8b7d;--teal-dark:#2e6b60;--m-ink:#2b2b2b;--m-gray:#6b6b6b;--m-light:#9a9a9a;
+--chipbg:#f0f2f1;--m-rule:#e3e3e3}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55}
+.wrap{max-width:880px;margin:0 auto;padding:40px 24px 80px}
+.print-topbar{display:none}
+.term{background:var(--panel);border:1px solid var(--rule);border-radius:12px;overflow:hidden;
+box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.term-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--panel2);
+border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:12px;color:var(--dim)}
+.dot{width:11px;height:11px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.term-body{padding:26px 28px;font-family:var(--mono);font-size:14px}
+.prompt{color:var(--green)}
+.cursor{display:inline-block;width:8px;height:16px;background:var(--green);
+vertical-align:text-bottom;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.name{font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:1px;color:#fff;
+margin:14px 0 2px;font-family:var(--mono)}
+.name .accent{color:var(--green)}
+.role{color:var(--cyan);font-family:var(--mono);font-size:15px;margin-bottom:14px}
+.contactline{font-family:var(--mono);font-size:12.5px;color:var(--dim)}
+.contactline a{color:var(--cyan);text-decoration:none;border-bottom:1px dashed #2c3a52}
+nav.pills{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px}
+nav.pills a{font-family:var(--mono);font-size:12px;color:var(--dim);border:1px solid var(--rule);
+border-radius:999px;padding:5px 13px;text-decoration:none}
+nav.pills a:hover{color:var(--green);border-color:var(--green)}
+.btn-print{font-family:var(--mono);font-size:12px;cursor:pointer;background:var(--green);
+color:#08210e;border:none;border-radius:999px;padding:6px 14px;font-weight:700}
+.cols{display:flex;flex-direction:column}
+.side,.main{display:contents}
+.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}section{margin-top:44px}
+h2.sec{font-family:var(--mono);font-size:14px;color:var(--pink);letter-spacing:1px;margin-bottom:16px}
+h2.sec::before{content:"## ";color:var(--dim)}
+h2.sec::after{content:"";display:block;height:1px;margin-top:8px;
+background:linear-gradient(90deg,var(--rule),transparent)}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;
+padding:20px 22px;margin-bottom:14px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-3px);border-color:#33507a}
+.erow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card h3{font-size:16px;color:#fff}
+.card h3 .at{color:var(--dim);font-weight:400}
+.dates{font-family:var(--mono);font-size:11.5px;color:var(--amber)}
+.blurb{color:var(--dim);font-size:13.5px;margin:4px 0 10px}
+.sub{font-family:var(--mono);font-size:12px;color:var(--purple);margin:12px 0 5px}
+.card ul{padding-left:18px}
+.card li{font-size:13.5px;margin-bottom:5px}
+.card li::marker{color:var(--green)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 4px}
+.chip{font-family:var(--mono);font-size:11.5px;color:var(--cyan);background:#0d2138;
+border:1px solid #1d3d5f;border-radius:6px;padding:3px 9px}
+.group{margin-bottom:12px}
+.group h3{font-family:var(--mono);font-size:12px;color:var(--amber);font-weight:400;margin-bottom:4px}
+.plainlist{font-size:13.5px}
+.plainlist i{color:var(--dim)}
+footer{margin-top:60px;text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--dim)}
+footer .hint{color:var(--amber)}
+@media print{
+@page{margin:0;size:letter}
+body{background:#fff;color:var(--m-ink);line-height:1.4}
+.wrap{max-width:100%;padding:0 0 .3in 0}
+.screen-only,.term-bar,nav.pills,.btn-print,.cursor,.prompt-line,footer .hint{display:none!important}
+.print-topbar{display:block;height:10px;background:var(--teal);
+-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.term{background:none;border:none;box-shadow:none;border-radius:0}
+.term-body{padding:.26in .45in .1in;font-family:var(--sans)}
+.name{font-family:Georgia,serif;font-size:26pt;letter-spacing:4px;color:#222;margin:0}
+.name .accent{color:#222}
+.role{font-family:var(--sans);font-size:11pt;color:var(--m-gray);letter-spacing:2.5px;margin:2px 0 8px}
+.contactline{font-family:var(--sans);font-size:8.5pt;color:var(--m-gray);overflow-wrap:anywhere}
+.contactline a{color:var(--m-gray);border:none}
+.cols{flex-direction:row;align-items:flex-start;gap:.32in;padding:0 .45in}
+.side{display:block;width:29%;flex:0 0 29%;min-width:0}
+.main{display:block;width:71%;flex:1 1 auto;min-width:0}
+.o1{order:0}.o2{order:0}.o3{order:0}.o4{order:0}.o5{order:0}.o6{order:0}.o7{order:0}section{margin-top:0}
+h2.sec{font-family:var(--sans);font-size:10pt;font-weight:400;color:var(--m-light);
+letter-spacing:1.5px;margin:12px 0 6px}
+h2.sec::before{content:""}
+h2.sec::after{width:34px;height:2px;background:var(--teal);margin-top:3px;
+-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.card{background:none;border:none;border-radius:0;padding:6px 0 5px;margin:0;
+border-bottom:1px dashed var(--m-rule);page-break-inside:avoid;transform:none}
+.card.allow-break{page-break-inside:auto}
+.card:last-child,.side .card{border-bottom:none}
+.side .card{padding:2px 0}
+.card h3{font-size:11pt;color:#222}
+.card h3 .at{color:var(--m-gray);font-size:9.5pt}
+.dates{font-family:var(--sans);font-size:8.2pt;color:var(--m-light);font-style:italic;white-space:nowrap}
+.blurb{font-size:8.8pt;color:var(--m-gray);margin:1px 0 3px}
+.sub{font-family:var(--sans);font-size:9pt;font-weight:700;color:#222;margin:6px 0 1px}
+.card ul{padding-left:15px;margin:2px 0 3px}
+.card li{font-size:9pt;line-height:1.4;margin-bottom:2px}
+.card li::marker{color:var(--teal);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.chips{gap:3px;margin:2px 0 3px}
+.chip{font-family:var(--sans);font-size:7.8pt;color:#3a3a3a;background:var(--chipbg);
+border:none;border-radius:3px;padding:2px 6px;
+-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.group{margin-bottom:9px}
+.group h3{font-family:var(--sans);font-size:8.5pt;font-weight:700;color:var(--m-ink);margin:0 0 3px}
+.plainlist{font-size:8.3pt;line-height:1.6;color:var(--m-ink)}
+.plainlist i{color:var(--m-light);font-size:7.8pt}
+footer{margin:6px .45in 0;text-align:left;font-size:7.5pt;color:var(--m-gray);font-family:var(--sans)}
+}
+</style></head><body>
+<div class="wrap">
+<div class="print-topbar"></div>
+
+<div class="term">
+<div class="term-bar screen-only"><span class="dot r"></span><span class="dot y"></span>
+<span class="dot g"></span><span style="margin-left:8px">arnav@pune:~/resume — zsh</span></div>
+<div class="term-body">
+<div class="prompt-line screen-only"><span class="prompt">➜ ~/resume</span>
+ cat resume.yaml | render --target=$MEDIUM<span class="cursor"></span></div>
+<div class="name">ARNAV <span class="accent">MAHADESHWAR</span></div>
+<div class="role">Software Engineer — AI &amp; Full-Stack</div>
+<p class="contactline">Pune, Maharashtra, India · +91-9307837323 · amahadeshwar627@gmail.com</p>
+<p class="contactline">LinkedIn: <a href="https://www.linkedin.com/in/arnav-mahadeshwar-0993">linkedin.com/in/arnav-mahadeshwar-0993</a> · GitHub: <a href="https://github.com/arnav-mahadeshwar">github.com/arnav-mahadeshwar</a></p>
+<nav class="pills screen-only"><a href="#exp">experience</a><a href="#skills">skills</a>
+<a href="#projects">projects</a><a href="#edu">education</a>
+<button class="btn-print" onclick="window.print()">⎙ print → macchiato PDF</button></nav>
+</div></div>
+
+<div class="cols">
+<aside class="side">
+
+<section class="o2" id="skills"><h2 class="sec">Skills</h2><div class="card">
+<div class="group"><h3>languages:</h3>
+<div class="chips"><span class="chip">Python</span><span class="chip">TypeScript</span><span class="chip">JavaScript</span><span class="chip">SQL</span><span class="chip">Bash</span></div></div>
+<div class="group"><h3>frontend:</h3>
+<div class="chips"><span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Tailwind CSS</span><span class="chip">TanStack Query</span><span class="chip">HTML5 / CSS3</span></div></div>
+<div class="group"><h3>ai_ml:</h3>
+<div class="chips"><span class="chip">Large Language Models (LLMs)</span><span class="chip">Retrieval-Augmented Generation (RAG)</span><span class="chip">LangGraph</span><span class="chip">n8n</span><span class="chip">PyTorch</span><span class="chip">TensorFlow</span><span class="chip">Natural Language Processing (NLP)</span><span class="chip">Computer Vision</span></div></div>
+<div class="group"><h3>cloud_devops:</h3>
+<div class="chips"><span class="chip">AWS (S3, EC2, Textract, Secrets Manager)</span><span class="chip">Docker</span><span class="chip">CI/CD Pipelines</span><span class="chip">Linux Administration</span><span class="chip">Git / GitHub</span><span class="chip">Google Cloud Platform (GCP)</span></div></div>
+<div class="group"><h3>data_backend:</h3>
+<div class="chips"><span class="chip">PostgreSQL</span><span class="chip">Supabase</span><span class="chip">REST APIs</span><span class="chip">Google Apps Script</span><span class="chip">WhatsApp Business API</span></div></div>
+</div></section>
+
+<section class="o5" id="edu"><h2 class="sec">Education</h2>
+<div class="card">
+<div class="erow"><h3>Bachelor of Technology (B.Tech) <span class="at">— Computer Science — AI &amp; Machine Learning Specialization</span></h3></div>
+<div class="plainlist">SRM Institute of Science and Technology<br>
+<i>June 2021 – June 2025</i> · CGPA: 8.0 / 10.0</div>
+</div></section>
+
+<section class="o6"><h2 class="sec">Publication</h2>
+<div class="card"><div class="plainlist">
+"Computer Vision Module Application for Finding a Target in a Live Camera" — SSRN Elsevier Conference Proceedings, November 2024</div></div></section>
+<section class="o7"><h2 class="sec">Languages</h2><div class="card"><div class="plainlist">
+English <i>(Professional)</i><br>Hindi <i>(Native)</i><br>Marathi <i>(Native)</i><br>Japanese <i>(JLPT N4 Certified)</i></div></div></section>
+
+</aside>
+<main class="main">
+
+<section class="o1" id="summary"><h2 class="sec">Summary</h2>
+<div class="card"><ul style="list-style:none;padding:0"><li>Software engineer with 1.5+ years of experience building production systems across artificial intelligence (AI), full-stack development, and cloud infrastructure. Shipped Large Language Model (LLM)-powered workflows, WhatsApp Business API integrations, and Continuous Integration/Continuous Deployment (CI/CD) pipelines at a FinTech serving 100K+ customers and a textile-recycling startup operating 6 factory units. Strengths: Python, TypeScript, Next.js, AWS, Docker, and applied Machine Learning (ML).
+</li></ul></div></section>
+
+<section class="o3" id="exp"><h2 class="sec">Experience</h2>
+<div class="card">
+<div class="erow"><h3>Full-Stack Developer <span class="at">· MuddleArt Private Limited</span></h3>
+<span class="dates">April 2026 – Present</span></div>
+<p class="blurb">Sole engineer for India&#39;s first formal, tech-enabled pre-consumer textile waste recycler operating 6 factory units across Gujarat, Delhi, and Uttar Pradesh.
+</p><ul><li>Architected a serverless backend (Google Apps Script) with a webhook gateway, role-based dispatch engine, and scheduled cron jobs orchestrating daily logistics across 6 factory units, eliminating [X hours/week] of manual coordination</li><li>Integrated Meta WhatsApp Business API for interactive button-based approvals and template messaging across 4 operational teams (logistics, transport, bags, labour), processing [N] messages per month</li><li>Built the Next.js partner portal (Tailwind CSS, TanStack Query, Chart.js) with a token-gated live dashboard, material breakdown, and collective impact tracking</li><li>Engineered a 3-stage data pipeline (Staging → Confirmation → Master Ledger) with nightly archival and automated environmental impact reporting (CO2 avoided, water saved, employment generated)</li></ul></div>
+<div class="card allow-break">
+<div class="erow"><h3>AI &amp; ML Engineering Intern <span class="at">· Poonawalla Fincorp</span></h3>
+<span class="dates">August 2025 – February 2026</span></div>
+<p class="blurb">Built AI-driven underwriting infrastructure and automated testing pipelines for the Credit A.I. and Saarthi A.I. platforms at a Non-Banking Financial Company (NBFC) serving 100K+ customers.
+</p><div class="sub">Credit A.I. — AI Underwriting Platform</div>
+<div class="chips"><span class="chip">AWS S3</span><span class="chip">AWS Textract</span><span class="chip">Docker</span><span class="chip">CI/CD</span></div><ul><li>Deployed end-to-end CI/CD pipelines using Docker and YAML configuration, reducing manual deployment overhead by 70%</li><li>Authored Shell automation scripts syncing bulk data migrations between UAT and Production environments on AWS S3 (50GB+ per cycle), cutting operational latency by 90%</li><li>Collaborated with underwriting teams to launch an Educational Loan product through rapid iterative testing over a 3-month production track</li><li>Provisioned and managed Linux virtual machine (VM) environments supporting User Acceptance Testing (UAT) for 3 concurrent workstreams</li></ul>
+<div class="sub">Saarthi A.I. — Cohort Analytics &amp; Chatbot</div>
+<div class="chips"><span class="chip">Red Hat Linux</span><span class="chip">Cohort Analysis</span><span class="chip">API Security</span></div><ul><li>Served as infrastructure single point of contact (SPOC) for Red Hat Linux, resolving VM resource constraints to maintain 99% uptime</li><li>Architected cohort analysis pipelines correlating customer bounce rates with population density metrics for product teams</li><li>Stress-tested and hardened 15+ REST API endpoints via Postman validation with zero resulting production security incidents</li><li>Built log extraction routines parsing 500+ historical customer profiles to generate data-lifecycle insights for executive leadership</li></ul>
+</div>
+<div class="card">
+<div class="erow"><h3>Digital Infrastructure Lead <span class="at">· D.O.R.A.I Foundation (Volunteer, Part-Time)</span></h3>
+<span class="dates">February 2026 – Present</span></div>
+<ul><li>Led end-to-end migration of a legacy Zoho site to Astro and Tailwind CSS, improving performance for 1K+ monthly visitors</li><li>Engineered Python-based scraping agents with LLM-assisted (DeepSeek) workflows to extract and migrate structured content across 46 source maps</li></ul>
+</div>
+</section>
+
+<section class="o4" id="projects"><h2 class="sec">Open Source Projects</h2>
+<div class="card">
+<div class="erow"><h3>OmniForge 5E — Real-Time D&amp;D Companion Platform</h3><span class="dates">March 2026 – Present</span></div>
+<div class="chips"><span class="chip">Next.js 14</span><span class="chip">Supabase</span><span class="chip">PostgreSQL</span><span class="chip">TypeScript</span><span class="chip">WebSockets</span></div><ul><li>Designed a multi-tenant PostgreSQL schema (9+ migrations) with full Row-Level Security (RLS) for campaigns, compendium, and character data</li><li>Built a 29-rule parser engine extracting structured automation hooks from unstructured rules text, plus an active-effect dependency graph computing armor class, saves, and skill modifiers in real time</li><li>Implemented an admin ingestion pipeline for spells, monsters, items, and class data via JSON</li></ul>
+</div>
+<div class="card">
+<div class="erow"><h3>Resume-as-Code — This Resume&#39;s Build Pipeline</h3><span class="dates">July 2026 – Present</span></div>
+<div class="chips"><span class="chip">Python</span><span class="chip">Jinja2</span><span class="chip">YAML</span><span class="chip">CSS @media print</span><span class="chip">GitHub Actions</span><span class="chip">CI/CD</span></div><ul><li>Built the pipeline that generates this document: a single resume.yaml source of truth compiled by Python/Jinja2 into two render targets — an interactive terminal-themed web resume and an ATS-optimized print document — deployed automatically to GitHub Pages on every git push</li><li>Engineered a dual-face stylesheet where one DOM renders as a dark terminal UI on screen and re-flows into a two-column print layout via CSS display:contents and flexbox ordering, with a text layer verified against ATS parsing (linear extraction order, complete dates, zero clipping)</li></ul>
+</div>
+<div class="card">
+<div class="erow"><h3>AI-Driven Speech Therapy Platform</h3><span class="dates">January 2025 – June 2025</span></div>
+<div class="chips"><span class="chip">Seq2Seq</span><span class="chip">BiLSTM + Attention</span><span class="chip">Gemini API</span><span class="chip">MFCC / Log-Mel</span></div><ul><li>Engineered automated speech articulation analysis used by 200+ language learners, driving a 30% improvement in measured pronunciation outcomes</li><li>Implemented Sequence-to-Sequence (Seq2Seq) models with Bidirectional LSTM (BiLSTM) and attention mechanisms to classify phonetic errors at 87% accuracy</li><li>Integrated Gemini LLM to generate personalized practice material targeting each user&#39;s error profile</li></ul>
+</div>
+</section>
+
+</main></div>
+
+<footer><span class="hint">// hint: Ctrl+P re-renders this page as a macchiato document.
+view-source is welcome.</span><br>Arnav Mahadeshwar — amahadeshwar627@gmail.com</footer>
+</div></body></html>
