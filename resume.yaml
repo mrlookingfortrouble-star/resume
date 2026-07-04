@@ -1,0 +1,272 @@
+# ██████  ███████ ███████ ██    ██ ███    ███ ███████
+# ██   ██ ██      ██      ██    ██ ████  ████ ██
+# ██████  █████   ███████ ██    ██ ██ ████ ██ █████
+# ██   ██ ██           ██ ██    ██ ██  ██  ██ ██
+# ██   ██ ███████ ███████  ██████  ██      ██ ███████
+#
+# Single source of truth for Arnav Mahadeshwar's resume.
+# Spec: JSON Resume (https://jsonresume.org/schema/) + two extensions:
+#   - work[].subsections: groups multiple projects under one employer
+#   - volunteer[] renders inside Experience, tagged (Volunteer, Part-Time)
+#
+# Build: python build.py  →  dist/index.html (terminal⇄macchiato) + dist/ats.html
+# Deploy: git push (GitHub Actions → GitHub Pages)
+#
+# ⚠ TODO before first real submission:
+#   1. Rename GitHub account to arnav-mahadeshwar (old links redirect)
+#   2. Replace the two [bracketed placeholders] in MuddleArt highlights
+#   3. Update `url` in the resume-as-code project once the repo is public
+# ─────────────────────────────────────────────────────────────────────
+
+basics:
+  name: "Arnav Mahadeshwar"
+  label: "Software Engineer — AI & Full-Stack"
+  email: "amahadeshwar627@gmail.com"
+  phone: "+91-9307837323"
+  url: "https://arnav-mahadeshwar.github.io"
+  summary: >
+    Software engineer with 1.5+ years of experience building production systems
+    across artificial intelligence (AI), full-stack development, and cloud
+    infrastructure. Shipped Large Language Model (LLM)-powered workflows,
+    WhatsApp Business API integrations, and Continuous Integration/Continuous
+    Deployment (CI/CD) pipelines at a FinTech serving 100K+ customers and a
+    textile-recycling startup operating 6 factory units. Strengths: Python,
+    TypeScript, Next.js, AWS, Docker, and applied Machine Learning (ML).
+  location:
+    city: "Pune"
+    countryCode: "IN"
+    region: "Maharashtra"
+  profiles:
+    - network: "LinkedIn"
+      username: "arnav-mahadeshwar-0993"
+      url: "https://www.linkedin.com/in/arnav-mahadeshwar-0993"
+    - network: "GitHub"
+      username: "arnav-mahadeshwar"
+      url: "https://github.com/arnav-mahadeshwar"
+
+work:
+  - name: "MuddleArt Private Limited"
+    position: "Full-Stack Developer"
+    location: "Pune, India (Remote)"
+    startDate: "2026-04-01"
+    summary: >
+      Sole engineer for India's first formal, tech-enabled pre-consumer textile
+      waste recycler operating 6 factory units across Gujarat, Delhi, and
+      Uttar Pradesh.
+    highlights:
+      - >-
+        Architected a serverless backend (Google Apps Script) with a webhook
+        gateway, role-based dispatch engine, and scheduled cron jobs
+        orchestrating daily logistics across 6 factory units, eliminating
+        [X hours/week] of manual coordination
+      - >-
+        Integrated Meta WhatsApp Business API for interactive button-based
+        approvals and template messaging across 4 operational teams (logistics,
+        transport, bags, labour), processing [N] messages per month
+      - >-
+        Built the Next.js partner portal (Tailwind CSS, TanStack Query,
+        Chart.js) with a token-gated live dashboard, material breakdown, and
+        collective impact tracking
+      - >-
+        Engineered a 3-stage data pipeline (Staging → Confirmation → Master
+        Ledger) with nightly archival and automated environmental impact
+        reporting (CO2 avoided, water saved, employment generated)
+
+  - name: "Poonawalla Fincorp"
+    position: "AI & ML Engineering Intern"
+    location: "Pune, India"
+    url: "https://www.poonawallafincorp.com"
+    startDate: "2025-08-01"
+    endDate: "2026-02-04"
+    summary: >
+      Built AI-driven underwriting infrastructure and automated testing
+      pipelines for the Credit A.I. and Saarthi A.I. platforms at a Non-Banking
+      Financial Company (NBFC) serving 100K+ customers.
+    subsections:
+      - name: "Credit A.I. — AI Underwriting Platform"
+        keywords:
+          - "AWS S3"
+          - "AWS Textract"
+          - "Docker"
+          - "CI/CD"
+        highlights:
+          - >-
+            Deployed end-to-end CI/CD pipelines using Docker and YAML
+            configuration, reducing manual deployment overhead by 70%
+          - >-
+            Authored Shell automation scripts syncing bulk data migrations
+            between UAT and Production environments on AWS S3 (50GB+ per
+            cycle), cutting operational latency by 90%
+          - >-
+            Collaborated with underwriting teams to launch an Educational Loan
+            product through rapid iterative testing over a 3-month production
+            track
+          - >-
+            Provisioned and managed Linux virtual machine (VM) environments
+            supporting User Acceptance Testing (UAT) for 3 concurrent
+            workstreams
+      - name: "Saarthi A.I. — Cohort Analytics & Chatbot"
+        keywords:
+          - "Red Hat Linux"
+          - "Cohort Analysis"
+          - "API Security"
+        highlights:
+          - >-
+            Served as infrastructure single point of contact (SPOC) for Red Hat
+            Linux, resolving VM resource constraints to maintain 99% uptime
+          - >-
+            Architected cohort analysis pipelines correlating customer bounce
+            rates with population density metrics for product teams
+          - >-
+            Stress-tested and hardened 15+ REST API endpoints via Postman
+            validation with zero resulting production security incidents
+          - >-
+            Built log extraction routines parsing 500+ historical customer
+            profiles to generate data-lifecycle insights for executive
+            leadership
+
+volunteer:
+  - organization: "D.O.R.A.I Foundation"
+    url: "https://dorai-website.vercel.app/"
+    position: "Digital Infrastructure Lead"
+    startDate: "2026-02-01"
+    highlights:
+      - >-
+        Led end-to-end migration of a legacy Zoho site to Astro and Tailwind
+        CSS, improving performance for 1K+ monthly visitors
+      - >-
+        Engineered Python-based scraping agents with LLM-assisted (DeepSeek)
+        workflows to extract and migrate structured content across 46 source
+        maps
+
+projects:
+  - name: "OmniForge 5E — Real-Time D&D Companion Platform"
+    url: "https://github.com/arnav-mahadeshwar/omniforge-5e"
+    startDate: "2026-03-01"
+    keywords:
+      - "Next.js 14"
+      - "Supabase"
+      - "PostgreSQL"
+      - "TypeScript"
+      - "WebSockets"
+    highlights:
+      - >-
+        Designed a multi-tenant PostgreSQL schema (9+ migrations) with full
+        Row-Level Security (RLS) for campaigns, compendium, and character data
+      - >-
+        Built a 29-rule parser engine extracting structured automation hooks
+        from unstructured rules text, plus an active-effect dependency graph
+        computing armor class, saves, and skill modifiers in real time
+      - >-
+        Implemented an admin ingestion pipeline for spells, monsters, items,
+        and class data via JSON
+
+  - name: "Resume-as-Code — This Resume's Build Pipeline"
+    url: "https://github.com/arnav-mahadeshwar/resume"
+    startDate: "2026-07-01"
+    keywords:
+      - "Python"
+      - "Jinja2"
+      - "YAML"
+      - "CSS @media print"
+      - "GitHub Actions"
+      - "CI/CD"
+    highlights:
+      - >-
+        Built the pipeline that generates this document: a single resume.yaml
+        source of truth compiled by Python/Jinja2 into two render targets — an
+        interactive terminal-themed web resume and an ATS-optimized print
+        document — deployed automatically to GitHub Pages on every git push
+      - >-
+        Engineered a dual-face stylesheet where one DOM renders as a dark
+        terminal UI on screen and re-flows into a two-column print layout via
+        CSS display:contents and flexbox ordering, with a text layer verified
+        against ATS parsing (linear extraction order, complete dates, zero
+        clipping)
+
+  - name: "AI-Driven Speech Therapy Platform"
+    startDate: "2025-01-01"
+    endDate: "2025-06-01"
+    keywords:
+      - "Seq2Seq"
+      - "BiLSTM + Attention"
+      - "Gemini API"
+      - "MFCC / Log-Mel"
+    highlights:
+      - >-
+        Engineered automated speech articulation analysis used by 200+ language
+        learners, driving a 30% improvement in measured pronunciation outcomes
+      - >-
+        Implemented Sequence-to-Sequence (Seq2Seq) models with Bidirectional
+        LSTM (BiLSTM) and attention mechanisms to classify phonetic errors at
+        87% accuracy
+      - >-
+        Integrated Gemini LLM to generate personalized practice material
+        targeting each user's error profile
+
+education:
+  - institution: "SRM Institute of Science and Technology"
+    area: "Computer Science — AI & Machine Learning Specialization"
+    studyType: "Bachelor of Technology (B.Tech)"
+    startDate: "2021-06-01"
+    endDate: "2025-06-01"
+    score: "8.0 / 10.0"
+
+publications:
+  - name: "Computer Vision Module Application for Finding a Target in a Live Camera"
+    publisher: "SSRN Elsevier Conference Proceedings"
+    releaseDate: "2024-11-01"
+    summary: >
+      Real-time target detection in dynamic environments, evaluating
+      performance for spatial robotics and autonomous vehicle applications.
+
+skills:
+  - name: "Languages"
+    keywords:
+      - "Python"
+      - "TypeScript"
+      - "JavaScript"
+      - "SQL"
+      - "Bash"
+  - name: "Frontend"
+    keywords:
+      - "React"
+      - "Next.js"
+      - "Tailwind CSS"
+      - "TanStack Query"
+      - "HTML5 / CSS3"
+  - name: "AI & ML"
+    keywords:
+      - "Large Language Models (LLMs)"
+      - "Retrieval-Augmented Generation (RAG)"
+      - "LangGraph"
+      - "n8n"
+      - "PyTorch"
+      - "TensorFlow"
+      - "Natural Language Processing (NLP)"
+      - "Computer Vision"
+  - name: "Cloud & DevOps"
+    keywords:
+      - "AWS (S3, EC2, Textract, Secrets Manager)"
+      - "Docker"
+      - "CI/CD Pipelines"
+      - "Linux Administration"
+      - "Git / GitHub"
+      - "Google Cloud Platform (GCP)"
+  - name: "Data & Backend"
+    keywords:
+      - "PostgreSQL"
+      - "Supabase"
+      - "REST APIs"
+      - "Google Apps Script"
+      - "WhatsApp Business API"
+
+languages:
+  - language: "English"
+    fluency: "Professional"
+  - language: "Hindi"
+    fluency: "Native"
+  - language: "Marathi"
+    fluency: "Native"
+  - language: "Japanese"
+    fluency: "JLPT N4 Certified"
