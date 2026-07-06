@@ -1,166 +1,8 @@
 
-#!/usr/bin/env python3
-"""
-resume build pipeline v2 — resume.yaml -> dist/index.html + dist/ats.html
-===========================================================================
-Usage:
-    pip install pyyaml jinja2
-    python build.py                  # builds both targets into ./dist
-    python build.py --only ats       # or: --only hybrid
-
-v2 changes:
-  - Print face now uses the ORIGINAL macchiato theme assets: Josefin Sans /
-    Lato fonts, #56817A green, #39424B ink, keylines, ghostwhite chips,
-    dotted separators, 10px top border, A4 page.
-  - Print columns use display:table-cell (survives page breaks, unlike flex)
-    with a direction:rtl swap so the DOM stays ATS-linear (main content
-    first) while the sidebar still renders on the left.
-  - Volunteer is its own section in BOTH render targets.
-  - Hardcoded screen-only "This Resume" card removed (now data-driven via
-    the resume-as-code project entry in resume.yaml).
-
-Schema: JSON Resume + `work[].subsections` extension. See README.
-GitHub Actions deploy snippet: see README / previous docstring.
-"""
-import argparse
-import datetime
-import pathlib
-import sys
-
-try:
-    import yaml
-    from jinja2 import Environment, BaseLoader
-except ImportError:
-    sys.exit("Missing deps. Run: pip install pyyaml jinja2")
-
-# ---------------------------------------------------------------- helpers
-
-def fmt_date(iso, default="Present"):
-    if not iso:
-        return default
-    d = datetime.date.fromisoformat(str(iso)[:10])
-    return d.strftime("%B %Y")
-
-def daterange(item):
-    return f"{fmt_date(item.get('startDate'))} – {fmt_date(item.get('endDate'))}"
-
-def env():
-    e = Environment(loader=BaseLoader(), autoescape=True,
-                    trim_blocks=True, lstrip_blocks=True)
-    e.filters["daterange"] = daterange
-    e.filters["fmtdate"] = fmt_date
-    return e
-
-MACRO_HEAD = """
-{% set b = r.basics %}
-{% set gh = (r.basics.profiles | selectattr('network','equalto','GitHub') | list | first) %}
-{% set li = (r.basics.profiles | selectattr('network','equalto','LinkedIn') | list | first) %}
-"""
-
-# ---------------------------------------------------------------- ATS (linear)
-# Unchanged in structure; Volunteer was already its own section here.
-
-TPL_ATS = MACRO_HEAD + """<!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8">
-<title>{{ b.name }} — Resume</title>
-<style>
-@page{margin:.4in;size:letter}
-body{font-family:Georgia,"Times New Roman",serif;color:#1a1a1a;font-size:10pt;
-line-height:1.25;max-width:8.5in;margin:0 auto;padding:.4in;background:#fff}
-h1{font-size:18pt;margin:0 0 1px}
-.role{color:#1a4d8f;font-family:Arial,sans-serif;font-size:11pt;font-weight:700;margin:0 0 3px}
-.contact{color:#444;font-family:Arial,sans-serif;font-size:9pt;margin:0}
-h2{font-family:Arial,sans-serif;font-size:10pt;color:#1a4d8f;text-transform:uppercase;
-letter-spacing:1.2px;border-bottom:1.25px solid #c9c9c9;padding-bottom:2px;margin:10px 0 4px}
-h3{font-size:10.5pt;margin:6px 0 0}
-.when{color:#444;font-family:Arial,sans-serif;font-style:italic;font-size:9pt;margin:0 0 2px}
-.blurb{color:#444;font-size:9.5pt;margin:0 0 3px}
-h4{font-family:Arial,sans-serif;font-size:9pt;margin:4px 0 1px}
-ul{margin:1px 0 3px;padding-left:16px}
-li{font-size:10pt;margin-bottom:1.5px}
-.sk{font-size:9.5pt;margin:1px 0}
-.sk b{font-family:Arial,sans-serif;font-size:9pt}
-@media print{.card{page-break-inside:avoid}.allow-break{page-break-inside:auto}h2{break-after:avoid-page}}
-</style></head><body>
-
-<h1>{{ b.name | upper }}</h1>
-<p class="role">{{ b.label }}</p>
-<p class="contact">{{ b.location.city }}, {{ b.location.region }}, India | {{ b.phone }} | {{ b.email }}</p>
-<p class="contact">{% if li %}LinkedIn: {{ li.url | replace('https://www.','') }}{% endif %}
-{% if gh %} | GitHub: {{ gh.url | replace('https://','') }}{% endif %}</p>
-
-<h2>Professional Summary</h2>
-<p>{{ b.summary }}</p>
-
-<h2>Core Competencies</h2>
-{% for s in r.skills %}<p class="sk"><b>{{ s.name }}:</b> {{ s.keywords | join(', ') }}</p>
-{% endfor %}
-
-<h2>Work Experience</h2>
-{% for w in r.work %}
-<div class="card{% if w.subsections %} allow-break{% endif %}">
-<h3>{{ w.position }} — {{ w.name }}</h3>
-<p class="when">{{ w | daterange }}{% if w.location %} | {{ w.location }}{% endif %}</p>
-{% if w.summary %}<p class="blurb">{{ w.summary }}</p>{% endif %}
-{% if w.highlights %}<ul>{% for h in w.highlights %}<li>{{ h }}</li>{% endfor %}</ul>{% endif %}
-{% for sub in w.subsections or [] %}
-<h4>{{ sub.name }}</h4>
-<ul>{% for h in sub.highlights %}<li>{{ h }}</li>{% endfor %}</ul>
-{% endfor %}
-</div>
-{% endfor %}
-
-{% if r.volunteer %}
-<h2>Volunteer Experience</h2>
-{% for v in r.volunteer %}
-<div class="card">
-<h3>{{ v.position }} (Volunteer) — {{ v.organization }}</h3>
-<p class="when">{{ v | daterange }}</p>
-<ul>{% for h in v.highlights %}<li>{{ h }}</li>{% endfor %}</ul>
-</div>
-{% endfor %}
-{% endif %}
-
-<h2>Projects</h2>
-{% for p in r.projects %}
-<div class="card">
-<h3>{{ p.name }}</h3>
-<p class="when">{{ p | daterange }}{% if p.keywords %} | {{ p.keywords | join(', ') }}{% endif %}</p>
-<ul>{% for h in p.highlights %}<li>{{ h }}</li>{% endfor %}</ul>
-</div>
-{% endfor %}
-
-<h2>Education</h2>
-{% for e in r.education %}
-<h3>{{ e.studyType }}, {{ e.area }}</h3>
-<p class="when">{{ e | daterange }} | {{ e.institution }} | CGPA: {{ e.score }}</p>
-{% endfor %}
-
-{% if r.publications %}
-<h2>Publications</h2>
-{% for p in r.publications %}
-<p>"{{ p.name }}" — {{ p.publisher }}, {{ p.releaseDate | fmtdate }}. {{ p.summary }}</p>
-{% endfor %}
-{% endif %}
-
-<h2>Languages</h2>
-<p>{% for l in r.languages %}{{ l.language }} ({{ l.fluency }}){% if not loop.last %} | {% endif %}{% endfor %}</p>
-
-</body></html>
-"""
-
-# ---------------------------------------------------------------- hybrid
-# Screen: terminal theme (unchanged). Print: ORIGINAL macchiato.
-# DOM order is ATS-linear: header -> main (summary, experience, volunteer,
-# projects) -> side (skills, education, publication, languages).
-# Print columns: display:table + direction:rtl puts the sidebar visually
-# LEFT while main stays FIRST in the content stream. Table cells survive
-# page breaks (the original theme's trick); flex rows don't.
-
-TPL_HYBRID = MACRO_HEAD + """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ b.name }} — {{ b.label }}</title>
+<title>Arnav Mahadeshwar — Software Engineer — AI &amp; Full-Stack</title>
 <style>
 /* ── macchiato-original fonts (used by print face) ── */
 @font-face{font-family:'Josefin Sans';font-style:normal;font-weight:300;
@@ -220,8 +62,7 @@ color:#08210e;border:none;border-radius:999px;padding:6px 14px;font-weight:700}
 /* screen: columns dissolve; sections re-sequence via order */
 .cols{display:flex;flex-direction:column}
 .side,.main{display:contents}
-{% for i in range(1,9) %}.o{{ i }}{order:{{ i }}}{% endfor %}
-
+.o1{order:1}.o2{order:2}.o3{order:3}.o4{order:4}.o5{order:5}.o6{order:6}.o7{order:7}.o8{order:8}
 section{margin-top:44px}
 h2.sec{font-family:var(--mono);font-size:14px;color:var(--pink);letter-spacing:1px;margin-bottom:16px}
 h2.sec::before{content:"## ";color:var(--dim)}
@@ -277,8 +118,7 @@ color:var(--m-ink);margin:2px 0 8px}
 .main{display:table-cell;direction:ltr;vertical-align:top;width:auto}
 .side{display:table-cell;direction:ltr;vertical-align:top;width:160px;padding-right:20px}
 .side section{break-inside:avoid;page-break-inside:avoid}
-{% for i in range(1,9) %}.o{{ i }}{order:0}{% endfor %}
-
+.o1{order:0}.o2{order:0}.o3{order:0}.o4{order:0}.o5{order:0}.o6{order:0}.o7{order:0}.o8{order:0}
 section{margin-top:0;margin-bottom:12px}
 h2.sec{font-family:var(--m-head);font-weight:300;font-size:16px;letter-spacing:.5px;
 color:var(--m-ink);margin:0 0 2px;break-after:avoid-page;page-break-after:avoid}
@@ -318,11 +158,10 @@ footer{margin:8px 22px 0 34px;text-align:left;font-size:9px;color:var(--m-em);fo
 <div class="term-body">
 <div class="prompt-line screen-only"><span class="prompt">➜ ~/resume</span>
  cat resume.yaml | render --target=$MEDIUM<span class="cursor"></span></div>
-<div class="name">{{ b.name.split(' ')[0] | upper }} <span class="accent">{{ b.name.split(' ')[1:] | join(' ') | upper }}</span></div>
-<div class="role">{{ b.label }}</div>
-<p class="contactline">{{ b.location.city }}, {{ b.location.region }}, India · {{ b.phone }} · {{ b.email }}</p>
-<p class="contactline">{% if li %}LinkedIn: <a href="{{ li.url }}">{{ li.url | replace('https://www.','') }}</a>{% endif %}
-{% if gh %} · GitHub: <a href="{{ gh.url }}">{{ gh.url | replace('https://','') }}</a>{% endif %}</p>
+<div class="name">ARNAV <span class="accent">MAHADESHWAR</span></div>
+<div class="role">Software Engineer — AI &amp; Full-Stack</div>
+<p class="contactline">Pune, Maharashtra, India · +91-9307837323 · amahadeshwar627@gmail.com</p>
+<p class="contactline">LinkedIn: <a href="https://www.linkedin.com/in/arnav-mahadeshwar-0993">linkedin.com/in/arnav-mahadeshwar-0993</a> · GitHub: <a href="https://github.com/arnav-mahadeshwar">github.com/arnav-mahadeshwar</a></p>
 <nav class="pills screen-only"><a href="#exp">experience</a><a href="#skills">skills</a>
 <a href="#projects">projects</a><a href="#edu">education</a>
 <button class="btn-print" onclick="window.print()">⎙ print → macchiato PDF</button></nav>
@@ -336,44 +175,47 @@ footer{margin:8px 22px 0 34px;text-align:left;font-size:9px;color:var(--m-em);fo
 <main class="main">
 
 <section class="o1" id="summary"><h2 class="sec">Summary</h2>
-<div class="card"><ul style="list-style:none;padding:0"><li>{{ b.summary }}</li></ul></div></section>
+<div class="card"><ul style="list-style:none;padding:0"><li>Software engineer with 1.5+ years of experience building production systems across artificial intelligence (AI), full-stack development, and cloud infrastructure. Shipped Large Language Model (LLM)-powered workflows, WhatsApp Business API integrations, and Continuous Integration/Continuous Deployment (CI/CD) pipelines at a FinTech serving 100K+ customers and a textile-recycling startup operating 6 factory units. Strengths: Python, TypeScript, Next.js, AWS, Docker, and applied Machine Learning (ML).
+</li></ul></div></section>
 
 <section class="o3" id="exp"><h2 class="sec">Experience</h2>
-{% for w in r.work %}
-<div class="card{% if w.subsections %} allow-break{% endif %}">
-<div class="erow"><h3>{{ w.position }} <span class="at">· {{ w.name }}</span></h3>
-<span class="dates">{{ w | daterange }}</span></div>
-{% if w.summary %}<p class="blurb">{{ w.summary }}</p>{% endif %}
-{% if w.highlights %}<ul>{% for h in w.highlights %}<li>{{ h }}</li>{% endfor %}</ul>{% endif %}
-{% for sub in w.subsections or [] %}
-<div class="sub">{{ sub.name }}</div>
-{% if sub.keywords %}<div class="chips">{% for k in sub.keywords %}<span class="chip">{{ k }}</span>{% endfor %}</div>{% endif %}
-<ul>{% for h in sub.highlights %}<li>{{ h }}</li>{% endfor %}</ul>
-{% endfor %}
+<div class="card">
+<div class="erow"><h3>Full-Stack Developer <span class="at">· MuddleArt Private Limited</span></h3>
+<span class="dates">April 2026 – Present</span></div>
+<p class="blurb">Sole engineer for India&#39;s first formal, tech-enabled pre-consumer textile waste recycler operating 6 factory units across Gujarat, Delhi, and Uttar Pradesh.
+</p><ul><li>Architected a serverless backend (Google Apps Script) with a webhook gateway, role-based dispatch engine, and scheduled cron jobs orchestrating daily logistics across 6 factory units, eliminating [X hours/week] of manual coordination</li><li>Integrated Meta WhatsApp Business API for interactive button-based approvals and template messaging across 4 operational teams (logistics, transport, bags, labour), processing [N] messages per month</li><li>Built the Next.js partner portal (Tailwind CSS, TanStack Query, Chart.js) with a token-gated live dashboard, material breakdown, and collective impact tracking</li><li>Engineered a 3-stage data pipeline (Staging → Confirmation → Master Ledger) with nightly archival and automated environmental impact reporting (CO2 avoided, water saved, employment generated)</li></ul></div>
+<div class="card allow-break">
+<div class="erow"><h3>AI &amp; ML Engineering Intern <span class="at">· Poonawalla Fincorp</span></h3>
+<span class="dates">August 2025 – February 2026</span></div>
+<p class="blurb">Built AI-driven underwriting infrastructure and automated testing pipelines for the Credit A.I. and Saarthi A.I. platforms at a Non-Banking Financial Company (NBFC) serving 100K+ customers.
+</p><div class="sub">Credit A.I. — AI Underwriting Platform</div>
+<div class="chips"><span class="chip">AWS S3</span><span class="chip">AWS Textract</span><span class="chip">Docker</span><span class="chip">CI/CD</span></div><ul><li>Deployed end-to-end CI/CD pipelines using Docker and YAML configuration, reducing manual deployment overhead by 70%</li><li>Authored Shell automation scripts syncing bulk data migrations between UAT and Production environments on AWS S3 (50GB+ per cycle), cutting operational latency by 90%</li><li>Collaborated with underwriting teams to launch an Educational Loan product through rapid iterative testing over a 3-month production track</li><li>Provisioned and managed Linux virtual machine (VM) environments supporting User Acceptance Testing (UAT) for 3 concurrent workstreams</li></ul>
+<div class="sub">Saarthi A.I. — Cohort Analytics &amp; Chatbot</div>
+<div class="chips"><span class="chip">Red Hat Linux</span><span class="chip">Cohort Analysis</span><span class="chip">API Security</span></div><ul><li>Served as infrastructure single point of contact (SPOC) for Red Hat Linux, resolving VM resource constraints to maintain 99% uptime</li><li>Architected cohort analysis pipelines correlating customer bounce rates with population density metrics for product teams</li><li>Stress-tested and hardened 15+ REST API endpoints via Postman validation with zero resulting production security incidents</li><li>Built log extraction routines parsing 500+ historical customer profiles to generate data-lifecycle insights for executive leadership</li></ul>
 </div>
-{% endfor %}
 </section>
 
-{% if r.volunteer %}
 <section class="o4" id="volunteer"><h2 class="sec">Volunteer</h2>
-{% for v in r.volunteer %}
 <div class="card">
-<div class="erow"><h3>{{ v.position }} <span class="at">· {{ v.organization }}</span></h3>
-<span class="dates">{{ v | daterange }}</span></div>
-<ul>{% for h in v.highlights %}<li>{{ h }}</li>{% endfor %}</ul>
+<div class="erow"><h3>Digital Infrastructure Lead <span class="at">· D.O.R.A.I Foundation</span></h3>
+<span class="dates">February 2026 – Present</span></div>
+<ul><li>Led end-to-end migration of a legacy Zoho site to Astro and Tailwind CSS, improving performance for 1K+ monthly visitors</li><li>Engineered Python-based scraping agents with LLM-assisted (DeepSeek) workflows to extract and migrate structured content across 46 source maps</li></ul>
 </div>
-{% endfor %}
 </section>
-{% endif %}
 
 <section class="o5" id="projects"><h2 class="sec">Open Source Projects</h2>
-{% for p in r.projects %}
 <div class="card">
-<div class="erow"><h3>{{ p.name }}</h3><span class="dates">{{ p | daterange }}</span></div>
-{% if p.keywords %}<div class="chips">{% for k in p.keywords %}<span class="chip">{{ k }}</span>{% endfor %}</div>{% endif %}
-<ul>{% for h in p.highlights %}<li>{{ h }}</li>{% endfor %}</ul>
+<div class="erow"><h3>OmniForge 5E — Real-Time D&amp;D Companion Platform</h3><span class="dates">March 2026 – Present</span></div>
+<div class="chips"><span class="chip">Next.js 14</span><span class="chip">Supabase</span><span class="chip">PostgreSQL</span><span class="chip">TypeScript</span><span class="chip">WebSockets</span></div><ul><li>Designed a multi-tenant PostgreSQL schema (9+ migrations) with full Row-Level Security (RLS) for campaigns, compendium, and character data</li><li>Built a 29-rule parser engine extracting structured automation hooks from unstructured rules text, plus an active-effect dependency graph computing armor class, saves, and skill modifiers in real time</li><li>Implemented an admin ingestion pipeline for spells, monsters, items, and class data via JSON</li></ul>
 </div>
-{% endfor %}
+<div class="card">
+<div class="erow"><h3>Resume-as-Code — This Resume&#39;s Build Pipeline</h3><span class="dates">July 2026 – Present</span></div>
+<div class="chips"><span class="chip">Python</span><span class="chip">Jinja2</span><span class="chip">YAML</span><span class="chip">CSS @media print</span><span class="chip">GitHub Actions</span><span class="chip">CI/CD</span></div><ul><li>Built the pipeline that generates this document: a single resume.yaml source of truth compiled by Python/Jinja2 into two render targets — an interactive terminal-themed web resume and an ATS-optimized print document — deployed automatically to GitHub Pages on every git push</li><li>Engineered a dual-face stylesheet where one DOM renders as a dark terminal UI on screen and re-flows into a two-column print layout via CSS display:contents and flexbox ordering, with a text layer verified against ATS parsing (linear extraction order, complete dates, zero clipping)</li></ul>
+</div>
+<div class="card">
+<div class="erow"><h3>AI-Driven Speech Therapy Platform</h3><span class="dates">January 2025 – June 2025</span></div>
+<div class="chips"><span class="chip">Seq2Seq</span><span class="chip">BiLSTM + Attention</span><span class="chip">Gemini API</span><span class="chip">MFCC / Log-Mel</span></div><ul><li>Engineered automated speech articulation analysis used by 200+ language learners, driving a 30% improvement in measured pronunciation outcomes</li><li>Implemented Sequence-to-Sequence (Seq2Seq) models with Bidirectional LSTM (BiLSTM) and attention mechanisms to classify phonetic errors at 87% accuracy</li><li>Integrated Gemini LLM to generate personalized practice material targeting each user&#39;s error profile</li></ul>
+</div>
 </section>
 
 </main>
@@ -381,63 +223,35 @@ footer{margin:8px 22px 0 34px;text-align:left;font-size:9px;color:var(--m-em);fo
 <aside class="side">
 
 <section class="o2" id="skills"><h2 class="sec">Skills</h2><div class="card">
-{% for s in r.skills %}
-<div class="group"><h3>{{ s.name | lower | replace(' & ','_') | replace(' ','_') }}:</h3>
-<div class="chips">{% for k in s.keywords %}<span class="chip">{{ k }}</span>{% endfor %}</div></div>
-{% endfor %}
+<div class="group"><h3>languages:</h3>
+<div class="chips"><span class="chip">Python</span><span class="chip">TypeScript</span><span class="chip">JavaScript</span><span class="chip">SQL</span><span class="chip">Bash</span></div></div>
+<div class="group"><h3>frontend:</h3>
+<div class="chips"><span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Tailwind CSS</span><span class="chip">TanStack Query</span><span class="chip">HTML5 / CSS3</span></div></div>
+<div class="group"><h3>ai_ml:</h3>
+<div class="chips"><span class="chip">Large Language Models (LLMs)</span><span class="chip">Retrieval-Augmented Generation (RAG)</span><span class="chip">LangGraph</span><span class="chip">n8n</span><span class="chip">PyTorch</span><span class="chip">TensorFlow</span><span class="chip">Natural Language Processing (NLP)</span><span class="chip">Computer Vision</span></div></div>
+<div class="group"><h3>cloud_devops:</h3>
+<div class="chips"><span class="chip">AWS (S3, EC2, Textract, Secrets Manager)</span><span class="chip">Docker</span><span class="chip">CI/CD Pipelines</span><span class="chip">Linux Administration</span><span class="chip">Git / GitHub</span><span class="chip">Google Cloud Platform (GCP)</span></div></div>
+<div class="group"><h3>data_backend:</h3>
+<div class="chips"><span class="chip">PostgreSQL</span><span class="chip">Supabase</span><span class="chip">REST APIs</span><span class="chip">Google Apps Script</span><span class="chip">WhatsApp Business API</span></div></div>
 </div></section>
 
 <section class="o6" id="edu"><h2 class="sec">Education</h2>
-{% for e in r.education %}<div class="card">
-<div class="erow"><h3>{{ e.studyType }} <span class="at">— {{ e.area }}</span></h3></div>
-<div class="plainlist">{{ e.institution }}<br>
-<i>{{ e | daterange }}</i> · CGPA: {{ e.score }}</div>
-</div>{% endfor %}</section>
+<div class="card">
+<div class="erow"><h3>Bachelor of Technology (B.Tech) <span class="at">— Computer Science — AI &amp; Machine Learning Specialization</span></h3></div>
+<div class="plainlist">SRM Institute of Science and Technology<br>
+<i>June 2021 – June 2025</i> · CGPA: 8.0 / 10.0</div>
+</div></section>
 
-{% if r.publications %}
 <section class="o7"><h2 class="sec">Publication</h2>
-{% for p in r.publications %}<div class="card"><div class="plainlist">
-"{{ p.name }}" — {{ p.publisher }}, {{ p.releaseDate | fmtdate }}</div></div>{% endfor %}
-</section>{% endif %}
-
+<div class="card"><div class="plainlist">
+"Computer Vision Module Application for Finding a Target in a Live Camera" — SSRN Elsevier Conference Proceedings, November 2024</div></div></section>
 <section class="o8"><h2 class="sec">Languages</h2><div class="card"><div class="plainlist">
-{% for l in r.languages %}{{ l.language }} <i>({{ l.fluency }})</i>{% if not loop.last %}<br>{% endif %}{% endfor %}
-</div></div></section>
+English <i>(Professional)</i><br>Hindi <i>(Native)</i><br>Marathi <i>(Native)</i><br>Japanese <i>(JLPT N4 Certified)</i></div></div></section>
 
 </aside>
 
 </div>
 
 <footer><span class="hint">// hint: Ctrl+P re-renders this page as a macchiato document.
-view-source is welcome.</span><br>{{ b.name }} — {{ b.email }}</footer>
+view-source is welcome.</span><br>Arnav Mahadeshwar — amahadeshwar627@gmail.com</footer>
 </div></body></html>
-"""
-
-# ---------------------------------------------------------------- main
-
-def main():
-    ap = argparse.ArgumentParser(description="resume.yaml -> HTML")
-    ap.add_argument("--src", default="resume.yaml")
-    ap.add_argument("--out", default="dist")
-    ap.add_argument("--only", choices=["hybrid", "ats"])
-    args = ap.parse_args()
-
-    data = yaml.safe_load(pathlib.Path(args.src).read_text(encoding="utf-8"))
-    out = pathlib.Path(args.out)
-    out.mkdir(exist_ok=True)
-    e = env()
-
-    targets = {"hybrid": ("index.html", TPL_HYBRID), "ats": ("ats.html", TPL_ATS)}
-    if args.only:
-        targets = {args.only: targets[args.only]}
-
-    for name, (fname, tpl) in targets.items():
-        html = e.from_string(tpl).render(r=data)
-        (out / fname).write_text(html, encoding="utf-8")
-        print(f"✓ {name:6s} -> {out / fname}")
-
-    print("\nNext: open dist/index.html | Ctrl+P for the macchiato PDF")
-    print("      upload dist/ats.html print-out to job portals")
-
-if __name__ == "__main__":
-    main()

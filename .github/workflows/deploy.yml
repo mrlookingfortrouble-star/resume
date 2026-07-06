@@ -2,18 +2,36 @@ name: build-resume
 on: 
   push: 
     branches: [main]
+
+# Grants permissions for the workflow to deploy directly to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: 
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: 
           python-version: '3.12'
       - run: pip install pyyaml jinja2 && python build.py
-      - uses: peaceiris/actions-gh-pages@v4
+      
+      # This step uploads the "artifact" the error was asking for
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
