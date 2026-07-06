@@ -118,9 +118,6 @@ work:
             Architected cohort analysis pipelines correlating customer bounce
             rates with population density metrics for product teams
           - >-
-            Stress-tested and hardened 15+ REST API endpoints via Postman
-            validation with zero resulting production security incidents
-          - >-
             Built log extraction routines parsing 500+ historical customer
             profiles to generate data-lifecycle insights for executive
             leadership
