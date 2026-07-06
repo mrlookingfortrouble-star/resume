@@ -58,11 +58,11 @@ work:
         Architected a serverless backend (Google Apps Script) with a webhook
         gateway, role-based dispatch engine, and scheduled cron jobs
         orchestrating daily logistics across 6 factory units, eliminating
-        [X hours/week] of manual coordination
+        10+ hours/week of manual coordination
       - >-
         Integrated Meta WhatsApp Business API for interactive button-based
         approvals and template messaging across 4 operational teams (logistics,
-        transport, bags, labour), processing [N] messages per month
+        transport, bags, labour), processing 100+ messages per month
       - >-
         Built the Next.js partner portal (Tailwind CSS, TanStack Query,
         Chart.js) with a token-gated live dashboard, material breakdown, and
