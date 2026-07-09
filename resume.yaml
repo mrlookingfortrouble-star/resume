@@ -39,7 +39,7 @@ basics:
   profiles:
     - network: "LinkedIn"
       username: "Arnav Mahadeshwar"
-      url: "www.linkedin.com/in/arnav-bala"
+      url: "https://www.linkedin.com/in/arnav-bala/"
     - network: "GitHub"
       username: "arnav-mahadeshwar"
       url: "https://github.com/arnav-mahadeshwar"

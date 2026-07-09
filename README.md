@@ -2,7 +2,7 @@
 
 > One YAML file. Three renderings. Zero manual formatting, ever again.
 
-**Live:** [arnav-mahadeshwar.github.io](https://arnav-mahadeshwar.github.io/resume) · **Author:** Arnav Mahadeshwar · [LinkedIn](www.linkedin.com/in/arnav-bala)
+**Live:** [arnav-mahadeshwar.github.io](https://arnav-mahadeshwar.github.io/resume) · **Author:** Arnav Mahadeshwar · [LinkedIn](https://www.linkedin.com/in/arnav-bala/)
 
 [![build](https://github.com/arnav-mahadeshwar/resume/actions/workflows/deploy.yml/badge.svg)](https://github.com/arnav-mahadeshwar/resume/actions)
 ![python](https://img.shields.io/badge/python-3.12-blue)
